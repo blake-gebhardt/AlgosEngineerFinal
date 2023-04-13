@@ -3,4 +3,4 @@ project(AlgosEngineerFinal)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(AlgosEngineerFinal main.cpp)
+add_executable(AlgosEngineerFinal main.cpp graph.cpp)
