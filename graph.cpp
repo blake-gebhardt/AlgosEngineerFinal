@@ -9,9 +9,9 @@
 
 class Graph {
 public:
-    Graph(int V, int E, const std::string& type, const std::string& dist)
+    Graph(int V, int E, const std::string &type, const std::string &dist)
             : V(V), E(E), type(type), dist(dist) {
-        adj = new int*[V];
+        adj = new int *[V];
         for (int i = 0; i < V; ++i) {
             adj[i] = new int[V];
             std::fill_n(adj[i], V, -1);
@@ -50,7 +50,7 @@ public:
 private:
     int V, E;
     std::string type, dist;
-    int** adj;
+    int **adj;
 
     void generateCompleteGraph() {
         for (int i = 0; i < V; ++i) {
@@ -71,10 +71,11 @@ private:
     void generateRandomGraph() {
         std::srand(static_cast<unsigned>(std::time(0)));
         int edgesCreated = 0;
-
+        int mean = V / 2;
+        int sd = V / 6;
         while (edgesCreated < E) {
-            int u = getRandomVertex();
-            int v = getRandomVertex();
+            int u = getRandomVertex(mean, sd);
+            int v = getRandomVertex(mean, sd);
 
             if (u != v && adj[u][v] == -1) {
                 adj[u][v] = v;
@@ -84,17 +85,27 @@ private:
         }
     }
 
-    int getRandomVertex() {
+    int getRandomVertex(int mean, int sd) {
         int randVertex = std::rand() % V;
         if (dist == "UNIFORM") {
             return randVertex;
         } else if (dist == "SKEWED") {
             return static_cast<int>(V * (1 - std::sqrt(1 - randVertex / static_cast<double>(V))));
         } else {
-            // Custom distribution logic goes here.
-            return randVertex;  // Placeholder.
+            // Custom distribution logic for Gaussian distribution.
+            if (dist == "GAUSSIAN") {
+                static std::default_random_engine generator(static_cast<unsigned>(std::time(0)));
+                std::normal_distribution<double> gaussian_dist(mean, sd);
+                int generated_vertex;
+                do {
+                    generated_vertex = static_cast<int>(std::round(gaussian_dist(generator)));
+                } while (generated_vertex < 0 || generated_vertex >= V);
+                return generated_vertex;
+            } else {
+                std::cerr << "Unknown distribution: " << dist << std::endl;
+                return randVertex;
+            }
         }
-    }
+    };
+
 };
-
-
