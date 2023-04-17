@@ -6,6 +6,7 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <fstream>
 
 class Graph {
 public:
@@ -46,6 +47,42 @@ public:
             std::cout << std::endl;
         }
     }
+
+    void visualizeGraph(const Graph& graph) {
+        // Create a new DOT file for the graph
+        std::string fileName =  graph.type + graph.dist;
+        std::ofstream dotFile(fileName + ".dot");
+        dotFile << "digraph {\n";
+
+        // Add nodes to the DOT file
+        for (int i = 0; i < graph.V; ++i) {
+            dotFile << i << ";\n";
+        }
+
+        // Add edges to the DOT file
+        for (int i = 0; i < graph.V; ++i) {
+            for (int j = 0; j < graph.V; ++j) {
+                if (graph.adj[i][j] != -1) {
+                    dotFile << i << " -> " << j << ";\n";
+                }
+            }
+        }
+
+        // Close the DOT file
+        dotFile << "}\n";
+        dotFile.close();
+
+        // Call Graphviz to render the graph
+        std::string toRender = "dot -Tpng " + fileName + ".dot -o " + fileName + ".png";
+        std::system(toRender.c_str());
+    }
+
+
+
+
+
+
+
 
 private:
     int V, E;

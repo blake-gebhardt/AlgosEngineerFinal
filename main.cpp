@@ -8,8 +8,8 @@
 
 
 int main() {
-    int V = 50;
-    int E = 45;
+    int V = 4;
+    int E = 3;
 
     std::vector<std::string> graphTypes = {"COMPLETE", "CYCLE", "RANDOM"};
     std::vector<std::string> distributions = {"UNIFORM", "SKEWED", "GAUSSIAN"};
@@ -21,6 +21,7 @@ int main() {
             Graph graph(V, E, graphTypes[i], distributions[j]);
             graph.generateGraph();
             graph.printAdjacencyList();
+            graph.visualizeGraph(graph);
             std::cout << std::endl;
         }
     }
