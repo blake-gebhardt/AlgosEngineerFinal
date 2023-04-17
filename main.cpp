@@ -9,7 +9,7 @@
 
 int main() {
     int V = 4;
-    int E = 3;
+    int E = 2;
 
     std::vector<std::string> graphTypes = {"COMPLETE", "CYCLE", "RANDOM"};
     std::vector<std::string> distributions = {"UNIFORM", "SKEWED", "GAUSSIAN"};

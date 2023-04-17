@@ -109,7 +109,7 @@ private:
         std::srand(static_cast<unsigned>(std::time(0)));
         int edgesCreated = 0;
         int mean = V / 2;
-        int sd = V / 6;
+        int sd = (V / 6) + 1;
         while (edgesCreated < E) {
             int u = getRandomVertex(mean, sd);
             int v = getRandomVertex(mean, sd);
