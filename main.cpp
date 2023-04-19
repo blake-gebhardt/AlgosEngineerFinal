@@ -9,7 +9,7 @@
 int main() {
     // Define the number of vertices and edges for the graphs
     int V = 20;
-    int E = 20;
+    int E = 25;
 
     // Generate the complete graph
     Graph complete(V, E, "COMPLETE", "UNIFORM");
