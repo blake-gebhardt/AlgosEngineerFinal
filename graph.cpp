@@ -50,9 +50,12 @@ public:
 
     void visualizeGraph(const Graph& graph) {
         // Create a new DOT file for the graph
-        std::string fileName =  graph.type + graph.dist;
+        std::string fileName = graph.type + graph.dist;
         std::ofstream dotFile(fileName + ".dot");
-        dotFile << "digraph {\n";
+        dotFile << "graph {\n";
+
+        // Specify the circo layout algorithm
+        dotFile << "layout=circo;\n";
 
         // Add nodes to the DOT file
         for (int i = 0; i < graph.V; ++i) {
@@ -61,9 +64,9 @@ public:
 
         // Add edges to the DOT file
         for (int i = 0; i < graph.V; ++i) {
-            for (int j = 0; j < graph.V; ++j) {
+            for (int j = i; j < graph.V; ++j) {
                 if (graph.adj[i][j] != -1) {
-                    dotFile << i << " -> " << j << ";\n";
+                    dotFile << i << " -- " << j << ";\n";
                 }
             }
         }
@@ -72,10 +75,15 @@ public:
         dotFile << "}\n";
         dotFile.close();
 
-        // Call Graphviz to render the graph
-        std::string toRender = "dot -Tpng " + fileName + ".dot -o " + fileName + ".png";
+        // Call Graphviz to render the graph with the circo layout algorithm
+        std::string toRender = "circo -Tpng " + fileName + ".dot -o " + fileName + ".png";
         std::system(toRender.c_str());
+
+        // Delete the DOT file
+        std::remove((fileName + ".dot").c_str());
     }
+
+
 
 
 

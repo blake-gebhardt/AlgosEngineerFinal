@@ -8,8 +8,8 @@
 
 
 int main() {
-    int V = 25;
-    int E = 15;
+    int V = 20;
+    int E = 10;
 
     std::vector<std::string> graphTypes = {"COMPLETE", "CYCLE", "RANDOM"};
     std::vector<std::string> distributions = {"UNIFORM", "SKEWED", "GAUSSIAN"};
