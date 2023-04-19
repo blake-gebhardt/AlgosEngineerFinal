@@ -1,5 +1,4 @@
 #include <iostream>
-#include <vector>
 #include <random>
 #include <algorithm>
 #include <ctime>
@@ -8,23 +7,49 @@
 
 
 int main() {
+    // Define the number of vertices and edges for the graphs
     int V = 20;
-    int E = 10;
+    int E = 20;
 
-    std::vector<std::string> graphTypes = {"COMPLETE", "CYCLE", "RANDOM"};
-    std::vector<std::string> distributions = {"UNIFORM", "SKEWED", "GAUSSIAN"};
+    // Generate the complete graph
+    Graph complete(V, E, "COMPLETE", "UNIFORM");
+    complete.generateGraph();
+    std::cout << "COMPLETE Graph" << std::endl;
+    std::cout << "-----------------" << std::endl;
+    complete.printAdjacencyList();
+    complete.visualizeGraph(complete);
 
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            std::cout << "Graph " << i + 1 << " (Type: " << graphTypes[i] << ", Distribution: " << distributions[j]
-                      << "):\n";
-            Graph graph(V, E, graphTypes[i], distributions[j]);
-            graph.generateGraph();
-            graph.printAdjacencyList();
-            graph.visualizeGraph(graph);
-            std::cout << std::endl;
-        }
-    }
+    // Generate the cycle graph
+    Graph cycle(V, E, "CYCLE", "UNIFORM");
+    cycle.generateGraph();
+    std::cout << "\nCYCLE Graph" << std::endl;
+    std::cout << "-----------------" << std::endl;
+    cycle.printAdjacencyList();
+    cycle.visualizeGraph(cycle);
+
+    // Generate the random uniform graph
+    Graph randUniform(V, E, "RANDOM", "UNIFORM");
+    randUniform.generateGraph();
+    std::cout << "\nRANDOM (Uniform) Graph" << std::endl;
+    std::cout << "-----------------" << std::endl;
+    randUniform.printAdjacencyList();
+    randUniform.visualizeGraph(randUniform);
+
+    // Generate the random skewed graph
+    Graph randSkewed(V, E, "RANDOM", "SKEWED");
+    randSkewed.generateGraph();
+    std::cout << "\nRANDOM (Skewed) Graph" << std::endl;
+    std::cout << "-----------------" << std::endl;
+    randSkewed.printAdjacencyList();
+    randSkewed.visualizeGraph(randSkewed);
+
+    // Generate the random Gaussian graph
+    Graph randGaussian(V, E, "RANDOM", "GAUSSIAN");
+    randGaussian.generateGraph();
+    std::cout << "\nRANDOM (Gaussian) Graph" << std::endl;
+    std::cout << "-----------------" << std::endl;
+    randGaussian.printAdjacencyList();
+    randGaussian.visualizeGraph(randGaussian);
 
     return 0;
 }

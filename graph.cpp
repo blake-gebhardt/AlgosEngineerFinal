@@ -48,6 +48,10 @@ public:
         }
     }
 
+    /*THE CODE BELOW WAS WRITTEN WITH HELP FROM https://graphviz.org/
+     * https://sketchviz.com/graphviz-examples
+     * and OpenAI
+    */
     void visualizeGraph(const Graph& graph) {
         // Create a new DOT file for the graph
         std::string fileName = graph.type + graph.dist;
@@ -135,7 +139,9 @@ private:
         if (dist == "UNIFORM") {
             return randVertex;
         } else if (dist == "SKEWED") {
-            return static_cast<int>(V * (1 - std::sqrt(1 - randVertex / static_cast<double>(V))));
+            double u = static_cast<double>(randVertex) / V;
+            int skewed_vertex = std::floor(V * std::pow(u, 0.75));
+            return skewed_vertex;
         } else {
             // Custom distribution logic for Gaussian distribution.
             if (dist == "GAUSSIAN") {
@@ -152,5 +158,7 @@ private:
             }
         }
     };
+
+
 
 };
