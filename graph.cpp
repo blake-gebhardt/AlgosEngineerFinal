@@ -36,15 +36,15 @@ public:
         }
     }
 
-    void printAdjacencyList() {
+    void printAdjacencyList(std::ostream &out) {
         for (int i = 0; i < V; ++i) {
-            std::cout << i << ": ";
+            out << i << ": ";
             for (int j = 0; j < V; ++j) {
                 if (adj[i][j] != -1) {
-                    std::cout << adj[i][j] << " ";
+                    out << adj[i][j] << " ";
                 }
             }
-            std::cout << std::endl;
+            out << std::endl;
         }
     }
 
@@ -86,15 +86,6 @@ public:
         // Delete the DOT file
         std::remove((fileName + ".dot").c_str());
     }
-
-
-
-
-
-
-
-
-
 
 private:
     int V, E;
@@ -139,9 +130,8 @@ private:
         if (dist == "UNIFORM") {
             return randVertex;
         } else if (dist == "SKEWED") {
-            double u = static_cast<double>(randVertex) / V;
-            int skewed_vertex = std::floor(V * std::pow(u, 0.75));
-            return skewed_vertex;
+            int randVertex2 = std::rand() % V;
+            return std::min(randVertex, randVertex2);
         } else {
             // Custom distribution logic for Gaussian distribution.
             if (dist == "GAUSSIAN") {
