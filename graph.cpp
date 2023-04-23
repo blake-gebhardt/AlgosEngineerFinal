@@ -153,3 +153,13 @@ int Graph::getRandomVertex(int mean, int sd) {
         }
     }
 }
+
+int Graph::getDegree(int vertex) const {
+    int degree = 0;
+    for (int i = 0; i < V; ++i) {
+        if (adj[vertex][i] != -1) {
+            degree++;
+        }
+    }
+    return degree;
+}

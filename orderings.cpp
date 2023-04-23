@@ -105,6 +105,8 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
+    printSummary(graph, color, N, "Smallest Last Vertex Ordering");
+
     // Cleanup
     for (int i = 0; i < N; ++i) {
         Node *cur2 = degreeLists[i];
@@ -172,6 +174,7 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
+    printSummary(graph, color, N, "Smallest Original Degree Last");
     // Cleanup
     for (int i = 0; i < N; ++i) {
         Node *cur = degreeLists[i];
@@ -225,6 +228,8 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
     for (int i = 0; i < N; ++i) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
+
+    printSummary(graph, color, N, "Uniform Random Ordering");
 
     // Cleanup
     delete[] order;
@@ -282,6 +287,8 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
     for (int i = 0; i < N; ++i) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
+
+    printSummary(graph, color, N, "Largest Degree First");
 }
 
 
@@ -328,6 +335,8 @@ void Orderings::depthFirstOrdering(Graph &graph) {
     for (int i = 0; i < N; ++i) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
+
+    printSummary(graph, color, N, "Depth-First Ordering");
 }
 
 void Orderings::maximalIndependentSetOrdering(Graph &graph) {
@@ -373,9 +382,48 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
+    printSummary(graph, color, N, "Maximal Independent Set Ordering");
+
     // Cleanup
     delete[] inSet;
     delete[] visited;
     delete[] color;
 }
 
+void Orderings::printSummary(Graph &graph, int *color, int N, const std::string &methodName) {
+// Calculate the number of colors used
+    int maxColor = 0;
+    for (int i = 0; i < N; ++i) {
+        if (color[i] > maxColor) {
+            maxColor = color[i];
+        }
+    }
+    maxColor++; // since color index starts from 0
+    std::cout << "----------------------------------------" << std::endl;
+    std::cout << "Summary for " << methodName << std::endl;
+    std::cout << "Total colors used: " << maxColor << std::endl;
+
+    // Count vertices with each color
+    std::vector<int> colorCount(maxColor, 0);
+    for (int i = 0; i < N; ++i) {
+        colorCount[color[i]]++;
+    }
+
+    // Print vertices with each color
+    for (int i = 0; i < maxColor; ++i) {
+        std::cout << "Color " << i << ": " << colorCount[i] << " vertices" << std::endl;
+    }
+
+    // Calculate and print the size of the terminal clique
+    int terminalCliqueSize = 0;
+    for (int i = 0; i < N; ++i) {
+        int degree = graph.getDegree(i);
+        if (degree >= terminalCliqueSize) {
+            terminalCliqueSize = degree + 1;
+        }
+    }
+    std::cout << "Size of the terminal clique: " << terminalCliqueSize << std::endl;
+
+    std::cout << "----------------------------------------" << std::endl;
+
+}

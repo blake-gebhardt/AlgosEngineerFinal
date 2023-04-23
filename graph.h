@@ -22,6 +22,7 @@ public:
 
     int getNumberOfVertices() const;
     int **getAdjMatrix();
+    int getDegree(int vertex) const;
 
 private:
     int V, E;

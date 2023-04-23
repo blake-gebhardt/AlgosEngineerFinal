@@ -53,5 +53,7 @@ private:
     private:
         Node *head = nullptr;
     };
+
+    static void printSummary(Graph &graph, int *color, int N, const std::string &methodName);
 };
 #endif //ALGOSENGINEERFINAL_ORDERINGS_H

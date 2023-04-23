@@ -7,11 +7,13 @@
 
 int main() {
     // Define the number of vertices and edges for the graphs
-    int V = 20;
-    int E = 50;
+    int V = 100;
+    int E = 100;
 
     // Open the file to save adjacency lists
     std::ofstream outputFile("graphs.txt");
+
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
     // Generate the complete graph
     Graph complete(V, E, "COMPLETE", "none");
@@ -85,6 +87,12 @@ int main() {
 
         std::cout << "\n---------------------------------------\n";
     }
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "Elapsed time: " << elapsed_seconds.count() << " seconds" << std::endl;
+
 
     return 0;
 }
