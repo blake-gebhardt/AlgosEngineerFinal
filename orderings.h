@@ -8,9 +8,21 @@
 #include <algorithm>
 #include "graph.h"
 
+
+/*
+ * Implement the smallest last ordering algorithm.
+ * Implement the smallest original degree last ordering algorithm.
+ * Implement the uniform random ordering algorithm.
+ * Implement three additional ordering algorithms of your choice.
+ */
 class Orderings {
 public:
     static void smallestLastVertexOrdering(Graph &graph);
+    static void smallestOriginalVertexOrdering(Graph &graph);
+    static void uniformRandomOrdering(Graph &graph);
+    static void largestDegreeFirstOrdering(Graph &graph);
+    static void depthFirstOrdering(Graph &graph);
+    static void maximalIndependentSetOrdering(Graph &graph);
 
 private:
     class Node {

@@ -72,15 +72,24 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         degree[vertexToDelete] = -1;
     }
 
-    int color[N];
+    // Sort deleted order based on degree
+    int *sortedVertices = new int[N];
     Node *cur = deletedOrder;
-    while (cur) {
-        int vertex = cur->value;
+    for (int i = 0; i < N; ++i) {
+        sortedVertices[i] = cur->value;
+        cur = cur->next;
+    }
+    std::sort(sortedVertices, sortedVertices + N, [&degree](int a, int b) {
+        return degree[a] < degree[b];
+    });
+
+    int color[N];
+    for (int i = 0; i < N; ++i) {
+        int vertex = sortedVertices[i];
         SimpleSet usedColors;
 
         for (int j = 0; j < N; ++j) {
-            if (adjMatrix[vertex][j] != -1 && degree[j] ==
-                                              -1) {
+            if (adjMatrix[vertex][j] != -1 && degree[j] == -1) {
                 usedColors.insert(color[j]);
             }
         }
@@ -89,22 +98,20 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
             assignedColor++;
         }
         color[vertex] = assignedColor;
-
-        cur = cur->next;
     }
 
-// Print the assigned colors
+    // Print the assigned colors
     for (int i = 0; i < N; ++i) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-// Cleanup
+    // Cleanup
     for (int i = 0; i < N; ++i) {
-        Node *cur = degreeLists[i];
-        while (cur) {
-            Node *next = cur->next;
-            delete cur;
-            cur = next;
+        Node *cur2 = degreeLists[i];
+        while (cur2) {
+            Node *next = cur2->next;
+            delete cur2;
+            cur2 = next;
         }
     }
 
@@ -115,7 +122,116 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         curDeletedOrder = next;
     }
 
-};
+    // Delete sortedVertices array
+    delete[] sortedVertices;
+}
+
+
+void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
+    int N = graph.getNumberOfVertices();
+    int **adjMatrix = graph.getAdjMatrix();
+
+    Node *degreeLists[N];
+    for (int i = 0; i < N; ++i) {
+        degreeLists[i] = nullptr;
+    }
+
+    int degree[N];
+    for (int i = 0; i < N; ++i) {
+        degree[i] = 0;
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[i][j] != -1) {
+                degree[i]++;
+            }
+        }
+        Node *newNode = new Node();
+        newNode->value = i;
+        newNode->next = degreeLists[degree[i]];
+        degreeLists[degree[i]] = newNode;
+    }
+
+    int color[N];
+    for (int i = 0; i < N; ++i) {
+        int vertex = i;
+        SimpleSet usedColors;
+
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[vertex][j] != -1) {
+                usedColors.insert(color[j]);
+            }
+        }
+        int assignedColor = 0;
+        while (usedColors.contains(assignedColor)) {
+            assignedColor++;
+        }
+        color[vertex] = assignedColor;
+    }
+
+    // Print the assigned colors
+    for (int i = 0; i < N; ++i) {
+        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
+    }
+
+    // Cleanup
+    for (int i = 0; i < N; ++i) {
+        Node *cur = degreeLists[i];
+        while (cur) {
+            Node *next = cur->next;
+            delete cur;
+            cur = next;
+        }
+    }
+}
+
+void Orderings::uniformRandomOrdering(Graph &graph) {
+    int N = graph.getNumberOfVertices();
+    int **adjMatrix = graph.getAdjMatrix();
+    int *order = new int[N];
+
+    // Initialize the order array with vertex indices
+    for (int i = 0; i < N; ++i) {
+        order[i] = i;
+    }
+
+    // Shuffle the order array
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(order, order + N, g);
+
+    // Initialize color array
+    int *color = new int[N];
+    for (int i = 0; i < N; ++i) {
+        color[i] = -1;
+    }
+
+    // Assign colors
+    for (int i = 0; i < N; ++i) {
+        int vertex = order[i];
+        SimpleSet usedColors;
+
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[vertex][j] != -1 && color[j] != -1) {
+                usedColors.insert(color[j]);
+            }
+        }
+        int assignedColor = 0;
+        while (usedColors.contains(assignedColor)) {
+            assignedColor++;
+        }
+        color[vertex] = assignedColor;
+    }
+
+    // Print the assigned colors
+    for (int i = 0; i < N; ++i) {
+        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
+    }
+
+    // Cleanup
+    delete[] order;
+    delete[] color;
+}
+
+
 
 
 

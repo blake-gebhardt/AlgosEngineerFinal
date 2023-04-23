@@ -56,5 +56,12 @@ int main() {
     // Close the output file
     outputFile.close();
 
+    Orderings orderer;
+    orderer.smallestLastVertexOrdering(cycle);
+    std::cout << "ORIG\n";
+    orderer.smallestOriginalVertexOrdering(cycle);
+    std::cout << "UNI\n";
+    orderer.uniformRandomOrdering(cycle);
+
     return 0;
 }
