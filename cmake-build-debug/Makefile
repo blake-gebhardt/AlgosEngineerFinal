@@ -177,6 +177,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlgosEngineerFinal.dir/build.make CMakeFiles/AlgosEngineerFinal.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+orderings.o: orderings.cpp.o
+.PHONY : orderings.o
+
+# target to build an object file
+orderings.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlgosEngineerFinal.dir/build.make CMakeFiles/AlgosEngineerFinal.dir/orderings.cpp.o
+.PHONY : orderings.cpp.o
+
+orderings.i: orderings.cpp.i
+.PHONY : orderings.i
+
+# target to preprocess a source file
+orderings.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlgosEngineerFinal.dir/build.make CMakeFiles/AlgosEngineerFinal.dir/orderings.cpp.i
+.PHONY : orderings.cpp.i
+
+orderings.s: orderings.cpp.s
+.PHONY : orderings.s
+
+# target to generate assembly for a file
+orderings.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlgosEngineerFinal.dir/build.make CMakeFiles/AlgosEngineerFinal.dir/orderings.cpp.s
+.PHONY : orderings.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... orderings.o"
+	@echo "... orderings.i"
+	@echo "... orderings.s"
 .PHONY : help
 
 

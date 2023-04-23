@@ -1,9 +1,7 @@
 #include <iostream>
-#include <fstream>
-#include <random>
 #include <algorithm>
-#include <ctime>
-#include "graph.cpp"
+#include "orderings.h"
+
 
 
 

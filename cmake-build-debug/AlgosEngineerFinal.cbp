@@ -83,7 +83,16 @@
 		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/graph.cpp">
 			<Option target="AlgosEngineerFinal"/>
 		</Unit>
+		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/graph.h">
+			<Option target="AlgosEngineerFinal"/>
+		</Unit>
 		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/main.cpp">
+			<Option target="AlgosEngineerFinal"/>
+		</Unit>
+		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/orderings.cpp">
+			<Option target="AlgosEngineerFinal"/>
+		</Unit>
+		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/orderings.h">
 			<Option target="AlgosEngineerFinal"/>
 		</Unit>
 		<Unit filename="/Users/blakegebhardt/Desktop/AlgosEngineerFinal/CMakeLists.txt">
