@@ -231,7 +231,151 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
     delete[] color;
 }
 
+void Orderings::largestDegreeFirstOrdering(Graph &graph) {
+    int N = graph.getNumberOfVertices();
+    int **adjMatrix = graph.getAdjMatrix();
+
+    int degree[N];
+    for (int i = 0; i < N; ++i) {
+        degree[i] = 0;
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[i][j] != -1) {
+                degree[i]++;
+            }
+        }
+    }
+
+    bool visited[N];
+    int color[N];
+    for (int i = 0; i < N; ++i) {
+        visited[i] = false;
+        color[i] = 0;
+    }
+
+    for (int i = 0; i < N; ++i) {
+        int maxDegreeVertex = -1;
+        int maxDegree = -1;
+        for (int j = 0; j < N; ++j) {
+            if (!visited[j] && degree[j] > maxDegree) {
+                maxDegree = degree[j];
+                maxDegreeVertex = j;
+            }
+        }
+
+        visited[maxDegreeVertex] = true;
+
+        SimpleSet usedColors;
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[maxDegreeVertex][j] != -1) {
+                usedColors.insert(color[j]);
+            }
+        }
+
+        int assignedColor = 0;
+        while (usedColors.contains(assignedColor)) {
+            assignedColor++;
+        }
+        color[maxDegreeVertex] = assignedColor;
+    }
+
+    // Print the assigned colors
+    for (int i = 0; i < N; ++i) {
+        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
+    }
+}
 
 
+void Orderings::depthFirstOrdering(Graph &graph) {
+    int N = graph.getNumberOfVertices();
+    int **adjMatrix = graph.getAdjMatrix();
 
+    bool visited[N];
+    int color[N];
+    for (int i = 0; i < N; ++i) {
+        visited[i] = false;
+        color[i] = -1;
+    }
+
+    std::function<void(int)> dfs = [&](int v) {
+        visited[v] = true;
+        SimpleSet usedColors;
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[v][j] != -1) {
+                usedColors.insert(color[j]);
+            }
+        }
+
+        int assignedColor = 0;
+        while (usedColors.contains(assignedColor)) {
+            assignedColor++;
+        }
+        color[v] = assignedColor;
+
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[v][j] != -1 && !visited[j]) {
+                dfs(j);
+            }
+        }
+    };
+
+    for (int i = 0; i < N; ++i) {
+        if (!visited[i]) {
+            dfs(i);
+        }
+    }
+
+    // Print the assigned colors
+    for (int i = 0; i < N; ++i) {
+        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
+    }
+}
+
+void Orderings::maximalIndependentSetOrdering(Graph &graph) {
+    int N = graph.getNumberOfVertices();
+    int **adjMatrix = graph.getAdjMatrix();
+
+    bool *inSet = new bool[N]();
+    bool *visited = new bool[N]();
+
+    for (int i = 0; i < N; ++i) {
+        if (!visited[i]) {
+            inSet[i] = true;
+            visited[i] = true;
+
+            for (int j = 0; j < N; ++j) {
+                if (adjMatrix[i][j] != -1) {
+                    visited[j] = true;
+                }
+            }
+        }
+    }
+
+    int *color = new int[N]();
+    for (int i = 0; i < N; ++i) {
+        if (inSet[i]) {
+            SimpleSet usedColors;
+            for (int j = 0; j < N; ++j) {
+                if (adjMatrix[i][j] != -1) {
+                    usedColors.insert(color[j]);
+                }
+            }
+
+            int assignedColor = 0;
+            while (usedColors.contains(assignedColor)) {
+                assignedColor++;
+            }
+            color[i] = assignedColor;
+        }
+    }
+
+    // Print the assigned colors
+    for (int i = 0; i < N; ++i) {
+        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
+    }
+
+    // Cleanup
+    delete[] inSet;
+    delete[] visited;
+    delete[] color;
+}
 

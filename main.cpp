@@ -8,13 +8,13 @@
 int main() {
     // Define the number of vertices and edges for the graphs
     int V = 20;
-    int E = 25;
+    int E = 50;
 
     // Open the file to save adjacency lists
     std::ofstream outputFile("graphs.txt");
 
     // Generate the complete graph
-    Graph complete(V, E, "COMPLETE", "UNIFORM");
+    Graph complete(V, E, "COMPLETE", "none");
     complete.generateGraph();
     outputFile << "COMPLETE Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
@@ -22,7 +22,7 @@ int main() {
     complete.visualizeGraph(complete);
 
     // Generate the cycle graph
-    Graph cycle(V, E, "CYCLE", "UNIFORM");
+    Graph cycle(V, E, "CYCLE", "none");
     cycle.generateGraph();
     outputFile << "\nCYCLE Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
@@ -57,11 +57,34 @@ int main() {
     outputFile.close();
 
     Orderings orderer;
-    orderer.smallestLastVertexOrdering(cycle);
-    std::cout << "ORIG\n";
-    orderer.smallestOriginalVertexOrdering(cycle);
-    std::cout << "UNI\n";
-    orderer.uniformRandomOrdering(cycle);
+    Graph* graphs[5] = {&complete, &cycle, &randUniform, &randSkewed, &randGaussian};
+    std::string graphNames[5] = {"complete", "cycle", "randUniform", "randSkewed", "randGaussian"};
+
+
+
+    for (int i = 0; i < 5; ++i) {
+        std::cout << "Applying orderings on " << graphNames[i] << " graph:" << std::endl;
+
+        std::cout << "\nSmallest last vertex ordering:" << std::endl;
+        orderer.smallestLastVertexOrdering(*graphs[i]);
+
+        std::cout << "\nSmallest original vertex ordering:" << std::endl;
+        orderer.smallestOriginalVertexOrdering(*graphs[i]);
+
+        std::cout << "\nUniform random ordering:" << std::endl;
+        orderer.uniformRandomOrdering(*graphs[i]);
+
+        std::cout << "\nLargest degree first ordering:" << std::endl;
+        orderer.largestDegreeFirstOrdering(*graphs[i]);
+
+        std::cout << "\nDepth-first search ordering:" << std::endl;
+        orderer.depthFirstOrdering(*graphs[i]);
+
+        std::cout << "\nMaximal independent set ordering:" << std::endl;
+        orderer.maximalIndependentSetOrdering(*graphs[i]);
+
+        std::cout << "\n---------------------------------------\n";
+    }
 
     return 0;
 }
