@@ -32,7 +32,7 @@ private:
     void generateCompleteGraph();
     void generateCycleGraph();
     void generateRandomGraph();
-    int getRandomVertex(int mean, int sd);
+    int getRandomVertex(int mean, int sd, std::default_random_engine &generator);
 };
 
 

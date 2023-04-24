@@ -114,13 +114,13 @@ void Graph::generateCycleGraph() {
 }
 
 void Graph::generateRandomGraph() {
-    std::srand(static_cast<unsigned>(std::time(0)));
+    std::default_random_engine generator(static_cast<unsigned>(std::time(0)));
     int edgesCreated = 0;
     int mean = V / 2;
     int sd = (V / 6) + 1;
     while (edgesCreated < E) {
-        int u = getRandomVertex(mean, sd);
-        int v = getRandomVertex(mean, sd);
+        int u = getRandomVertex(mean, sd, generator);
+        int v = getRandomVertex(mean, sd, generator);
 
         if (u != v && adj[u][v] == -1) {
             adj[u][v] = v;
@@ -130,17 +130,17 @@ void Graph::generateRandomGraph() {
     }
 }
 
-int Graph::getRandomVertex(int mean, int sd) {
-    int randVertex = std::rand() % V;
+int Graph::getRandomVertex(int mean, int sd, std::default_random_engine& generator) {
+    std::uniform_int_distribution<int> uniform_dist(0, V - 1);
     if (dist == "UNIFORM") {
-        return randVertex;
+        return uniform_dist(generator);
     } else if (dist == "SKEWED") {
-        int randVertex2 = std::rand() % V;
+        int randVertex = uniform_dist(generator);
+        int randVertex2 = uniform_dist(generator);
         return std::min(randVertex, randVertex2);
     } else {
         // Custom distribution logic for Gaussian distribution.
         if (dist == "GAUSSIAN") {
-            static std::default_random_engine generator(static_cast<unsigned>(std::time(0)));
             std::normal_distribution<double> gaussian_dist(mean, sd);
             int generated_vertex;
             do {
@@ -149,7 +149,7 @@ int Graph::getRandomVertex(int mean, int sd) {
             return generated_vertex;
         } else {
             std::cerr << "Unknown distribution: " << dist << std::endl;
-            return randVertex;
+            return uniform_dist(generator);
         }
     }
 }
