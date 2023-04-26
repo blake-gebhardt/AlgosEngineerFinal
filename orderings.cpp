@@ -373,22 +373,10 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     bool *inSet = new bool[N]();
     bool *visited = new bool[N]();
 
-    // Initialize degreeWhenDeleted array
-    int degreeWhenDeleted[N];
-
     for (int i = 0; i < N; ++i) {
         if (!visited[i]) {
             inSet[i] = true;
             visited[i] = true;
-
-            // Compute the degree when deleted
-            int degree = 0;
-            for (int j = 0; j < N; ++j) {
-                if (adjMatrix[i][j] != -1) {
-                    degree++;
-                }
-            }
-            degreeWhenDeleted[i] = degree;
 
             for (int j = 0; j < N; ++j) {
                 if (adjMatrix[i][j] != -1) {
@@ -398,7 +386,12 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
         }
     }
 
-    int *color = new int[N]();
+    int *color = new int[N];
+    int *degreeWhenDeleted = new int[N];
+    for (int i = 0; i < N; ++i) {
+        color[i] = -1;
+    }
+
     for (int i = 0; i < N; ++i) {
         if (inSet[i]) {
             SimpleSet usedColors;
@@ -413,6 +406,25 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
                 assignedColor++;
             }
             color[i] = assignedColor;
+            degreeWhenDeleted[i] = graph.getDegree(i);
+        }
+    }
+
+    for (int i = 0; i < N; ++i) {
+        if (color[i] == -1) {
+            SimpleSet usedColors;
+            for (int j = 0; j < N; ++j) {
+                if (adjMatrix[i][j] != -1) {
+                    usedColors.insert(color[j]);
+                }
+            }
+
+            int assignedColor = 0;
+            while (usedColors.contains(assignedColor)) {
+                assignedColor++;
+            }
+            color[i] = assignedColor;
+            degreeWhenDeleted[i] = graph.getDegree(i);
         }
     }
 
@@ -421,14 +433,15 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    // Update the printSummary function call to include the degreeWhenDeleted array
     printSummary(graph, color, degreeWhenDeleted, N, "Maximal Independent Set Ordering");
 
     // Cleanup
     delete[] inSet;
     delete[] visited;
     delete[] color;
+    delete[] degreeWhenDeleted;
 }
+
 
 
 void Orderings::printSummary(Graph &graph, int *color, int *degreeWhenDeleted, int N, const std::string &methodName) {

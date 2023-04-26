@@ -4,7 +4,7 @@
 
 int main() {
     // Define the number of vertices and edges for the graphs
-    int V = 20;
+    int V = 30;
     int E = 20;
 
     // Open the file to save adjacency lists
