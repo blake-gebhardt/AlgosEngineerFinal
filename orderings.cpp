@@ -35,6 +35,9 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         degreeLists[degree[i]] = newNode;
     }
 
+    // Add this array to store the degree when deleted for each vertex
+    int degreeWhenDeleted[N];
+
     Node *deletedOrder = nullptr;
     for (int i = 0; i < N; ++i) {
         int smallestDegree = 0;
@@ -69,19 +72,18 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
             }
         }
 
+        // Add this line right here
+        degreeWhenDeleted[vertexToDelete] = smallestDegree;
+
         degree[vertexToDelete] = -1;
     }
 
-    // Sort deleted order based on degree
     int *sortedVertices = new int[N];
     Node *cur = deletedOrder;
     for (int i = 0; i < N; ++i) {
         sortedVertices[i] = cur->value;
         cur = cur->next;
     }
-    std::sort(sortedVertices, sortedVertices + N, [&degree](int a, int b) {
-        return degree[a] < degree[b];
-    });
 
     int color[N];
     for (int i = 0; i < N; ++i) {
@@ -100,12 +102,8 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         color[vertex] = assignedColor;
     }
 
-    // Print the assigned colors
-    for (int i = 0; i < N; ++i) {
-        std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
-    }
-
-    printSummary(graph, color, N, "Smallest Last Vertex Ordering");
+    // Modify the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Smallest Last Vertex Ordering");
 
     // Cleanup
     for (int i = 0; i < N; ++i) {
@@ -139,6 +137,7 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
     }
 
     int degree[N];
+    int degreeWhenDeleted[N];
     for (int i = 0; i < N; ++i) {
         degree[i] = 0;
         for (int j = 0; j < N; ++j) {
@@ -146,6 +145,7 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
                 degree[i]++;
             }
         }
+        degreeWhenDeleted[i] = degree[i]; // Store the degree when deleted
         Node *newNode = new Node();
         newNode->value = i;
         newNode->next = degreeLists[degree[i]];
@@ -174,7 +174,9 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, N, "Smallest Original Degree Last");
+    // Update the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Smallest Original Degree Last");
+
     // Cleanup
     for (int i = 0; i < N; ++i) {
         Node *cur = degreeLists[i];
@@ -207,6 +209,12 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
         color[i] = -1;
     }
 
+    // Initialize degreeWhenDeleted array
+    int degreeWhenDeleted[N];
+    for (int i = 0; i < N; ++i) {
+        degreeWhenDeleted[i] = graph.getDegree(i); // Store the degree when deleted
+    }
+
     // Assign colors
     for (int i = 0; i < N; ++i) {
         int vertex = order[i];
@@ -229,7 +237,8 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, N, "Uniform Random Ordering");
+    // Update the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Uniform Random Ordering");
 
     // Cleanup
     delete[] order;
@@ -257,6 +266,9 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
         color[i] = 0;
     }
 
+    // Initialize degreeWhenDeleted array
+    int degreeWhenDeleted[N];
+
     for (int i = 0; i < N; ++i) {
         int maxDegreeVertex = -1;
         int maxDegree = -1;
@@ -268,6 +280,7 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
         }
 
         visited[maxDegreeVertex] = true;
+        degreeWhenDeleted[maxDegreeVertex] = maxDegree; // Store the degree when deleted
 
         SimpleSet usedColors;
         for (int j = 0; j < N; ++j) {
@@ -288,9 +301,9 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, N, "Largest Degree First");
+    // Update the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Largest Degree First");
 }
-
 
 void Orderings::depthFirstOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
@@ -303,8 +316,21 @@ void Orderings::depthFirstOrdering(Graph &graph) {
         color[i] = -1;
     }
 
+    // Initialize degreeWhenDeleted array
+    int degreeWhenDeleted[N];
+
     std::function<void(int)> dfs = [&](int v) {
         visited[v] = true;
+
+        // Compute the degree when deleted
+        int degree = 0;
+        for (int j = 0; j < N; ++j) {
+            if (adjMatrix[v][j] != -1) {
+                degree++;
+            }
+        }
+        degreeWhenDeleted[v] = degree;
+
         SimpleSet usedColors;
         for (int j = 0; j < N; ++j) {
             if (adjMatrix[v][j] != -1) {
@@ -336,7 +362,8 @@ void Orderings::depthFirstOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, N, "Depth-First Ordering");
+    // Update the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Depth-First Ordering");
 }
 
 void Orderings::maximalIndependentSetOrdering(Graph &graph) {
@@ -346,10 +373,22 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     bool *inSet = new bool[N]();
     bool *visited = new bool[N]();
 
+    // Initialize degreeWhenDeleted array
+    int degreeWhenDeleted[N];
+
     for (int i = 0; i < N; ++i) {
         if (!visited[i]) {
             inSet[i] = true;
             visited[i] = true;
+
+            // Compute the degree when deleted
+            int degree = 0;
+            for (int j = 0; j < N; ++j) {
+                if (adjMatrix[i][j] != -1) {
+                    degree++;
+                }
+            }
+            degreeWhenDeleted[i] = degree;
 
             for (int j = 0; j < N; ++j) {
                 if (adjMatrix[i][j] != -1) {
@@ -382,7 +421,8 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, N, "Maximal Independent Set Ordering");
+    // Update the printSummary function call to include the degreeWhenDeleted array
+    printSummary(graph, color, degreeWhenDeleted, N, "Maximal Independent Set Ordering");
 
     // Cleanup
     delete[] inSet;
@@ -390,31 +430,45 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     delete[] color;
 }
 
-void Orderings::printSummary(Graph &graph, int *color, int N, const std::string &methodName) {
-// Calculate the number of colors used
+
+void Orderings::printSummary(Graph &graph, int *color, int *degreeWhenDeleted, int N, const std::string &methodName) {
     int maxColor = 0;
     for (int i = 0; i < N; ++i) {
         if (color[i] > maxColor) {
             maxColor = color[i];
         }
     }
-    maxColor++; // since color index starts from 0
+    maxColor++;
+
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Summary for " << methodName << std::endl;
     std::cout << "Total colors used: " << maxColor << std::endl;
 
-    // Count vertices with each color
     std::vector<int> colorCount(maxColor, 0);
+    double sumOriginalDegree = 0;
+    int maxDegreeWhenDeleted = 0;
+
     for (int i = 0; i < N; ++i) {
         colorCount[color[i]]++;
+        int originalDegree = graph.getDegree(i);
+        sumOriginalDegree += originalDegree;
+        int currentDegreeWhenDeleted = degreeWhenDeleted[i];
+
+        if (currentDegreeWhenDeleted > maxDegreeWhenDeleted) {
+            maxDegreeWhenDeleted = currentDegreeWhenDeleted;
+        }
+
+        std::cout << "Vertex " << i << ": Color " << color[i] << ", Original degree " << originalDegree << ", Degree when deleted " << degreeWhenDeleted << std::endl;
     }
 
-    // Print vertices with each color
     for (int i = 0; i < maxColor; ++i) {
         std::cout << "Color " << i << ": " << colorCount[i] << " vertices" << std::endl;
     }
 
-    // Calculate and print the size of the terminal clique
+    double averageOriginalDegree = sumOriginalDegree / N;
+    std::cout << "Average original degree: " << averageOriginalDegree << std::endl;
+    std::cout << "Maximum degree when deleted: " << maxDegreeWhenDeleted << std::endl;
+
     int terminalCliqueSize = 0;
     for (int i = 0; i < N; ++i) {
         int degree = graph.getDegree(i);
@@ -425,5 +479,4 @@ void Orderings::printSummary(Graph &graph, int *color, int N, const std::string 
     std::cout << "Size of the terminal clique: " << terminalCliqueSize << std::endl;
 
     std::cout << "----------------------------------------" << std::endl;
-
 }

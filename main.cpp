@@ -2,13 +2,10 @@
 #include <algorithm>
 #include "orderings.h"
 
-
-
-
 int main() {
     // Define the number of vertices and edges for the graphs
-    int V = 10000;
-    int E = 2000000;
+    int V = 20;
+    int E = 20;
 
     // Open the file to save adjacency lists
     std::ofstream outputFile("graphs.txt");
@@ -16,12 +13,12 @@ int main() {
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 
     // Generate the complete graph
-    Graph complete(1000, 20000, "COMPLETE", "none");
+    Graph complete(V, E, "COMPLETE", "none");
     complete.generateGraph();
     outputFile << "COMPLETE Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
     complete.printAdjacencyList(outputFile);
-    //complete.visualizeGraph(complete);
+    complete.visualizeGraph(complete);
 
     // Generate the cycle graph
     Graph cycle(V, E, "CYCLE", "none");
@@ -29,7 +26,7 @@ int main() {
     outputFile << "\nCYCLE Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
     cycle.printAdjacencyList(outputFile);
-    //cycle.visualizeGraph(cycle);
+    cycle.visualizeGraph(cycle);
 
     // Generate the random uniform graph
     Graph randUniform(V, E, "RANDOM", "UNIFORM");
@@ -37,7 +34,7 @@ int main() {
     outputFile << "\nRANDOM (Uniform) Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
     randUniform.printAdjacencyList(outputFile);
-    //randUniform.visualizeGraph(randUniform);
+    randUniform.visualizeGraph(randUniform);
 
     // Generate the random skewed graph
     Graph randSkewed(V, E, "RANDOM", "SKEWED");
@@ -45,7 +42,7 @@ int main() {
     outputFile << "\nRANDOM (Skewed) Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
     randSkewed.printAdjacencyList(outputFile);
-    //randSkewed.visualizeGraph(randSkewed);
+    randSkewed.visualizeGraph(randSkewed);
 
     // Generate the random Gaussian graph
     Graph randGaussian(V, E, "RANDOM", "GAUSSIAN");
@@ -53,7 +50,7 @@ int main() {
     outputFile << "\nRANDOM (Gaussian) Graph" << std::endl;
     outputFile << "-----------------" << std::endl;
     randGaussian.printAdjacencyList(outputFile);
-    //randGaussian.visualizeGraph(randGaussian);
+    randGaussian.visualizeGraph(randGaussian);
 
     // Close the output file
     outputFile.close();

@@ -35,10 +35,4 @@ private:
     int getRandomVertex(int mean, int sd, std::default_random_engine &generator);
 };
 
-
-
-
-
-
-
 #endif //ALGOSENGINEERFINAL_GRAPH_H
