@@ -4,7 +4,7 @@
 
 int main() {
     // Define the number of vertices and edges for the graphs
-    int V = 30;
+    int V = 10;
     int E = 20;
 
     // Open the file to save adjacency lists
@@ -57,7 +57,7 @@ int main() {
 
     Orderings orderer;
     Graph* graphs[5] = {&complete, &cycle, &randUniform, &randSkewed, &randGaussian};
-    std::string graphNames[5] = {"complete", "cycle", "randUniform", "randSkewed", "randGaussian"};
+    std::string graphNames[5] = {"complete", "cycle", "randGaussian", "randSkewed",  "randUniform"};
 
 
 
