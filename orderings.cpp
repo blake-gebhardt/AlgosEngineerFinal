@@ -4,82 +4,78 @@
 #include <iostream>
 #include <algorithm>
 #include "orderings.h"
+#include "graph.h"
 
 
 void Orderings::smallestLastVertexOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
 
-    Node *vertices = new Node[N];
+    Graph::Node *vertices = new Graph::Node[N];
     for (int i = 0; i < N; ++i) {
         vertices[i].value = i;
         vertices[i].next = nullptr;
     }
 
-    Node *degreeLists[N];
+    Graph::Node *degreeLists[N];
     for (int i = 0; i < N; ++i) {
         degreeLists[i] = nullptr;
     }
 
     int degree[N];
     for (int i = 0; i < N; ++i) {
-        degree[i] = 0;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[i][j] != -1) {
-                degree[i]++;
-            }
-        }
-        Node *newNode = new Node();
+        degree[i] = graph.getDegree(i);
+        Graph::Node *newNode = new Graph::Node();
         newNode->value = i;
         newNode->next = degreeLists[degree[i]];
         degreeLists[degree[i]] = newNode;
     }
 
-    // Add this array to store the degree when deleted for each vertex
     int degreeWhenDeleted[N];
 
-    Node *deletedOrder = nullptr;
+    Graph::Node *deletedOrder = nullptr;
     for (int i = 0; i < N; ++i) {
         int smallestDegree = 0;
         while (!degreeLists[smallestDegree]) {
             smallestDegree++;
         }
 
-        Node *vertexToDeleteNode = degreeLists[smallestDegree];
+        Graph::Node *vertexToDeleteNode = degreeLists[smallestDegree];
         degreeLists[smallestDegree] = vertexToDeleteNode->next;
 
         int vertexToDelete = vertexToDeleteNode->value;
         vertexToDeleteNode->next = deletedOrder;
         deletedOrder = vertexToDeleteNode;
 
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[vertexToDelete][j] != -1 && degree[j] != -1) {
+        Graph::Node *current = adjList[vertexToDelete];
+        while (current != nullptr) {
+            int j = current->value;
+            if (degree[j] != -1) {
                 int oldDegree = degree[j];
                 int newDegree = --degree[j];
 
-                Node **oldDegreeList = &degreeLists[oldDegree];
+                Graph::Node **oldDegreeList = &degreeLists[oldDegree];
                 while (*oldDegreeList && (*oldDegreeList)->value != j) {
                     oldDegreeList = &((*oldDegreeList)->next);
                 }
 
                 if (*oldDegreeList) {
-                    Node *nodeToMove = *oldDegreeList;
+                    Graph::Node *nodeToMove = *oldDegreeList;
                     *oldDegreeList = nodeToMove->next;
 
                     nodeToMove->next = degreeLists[newDegree];
                     degreeLists[newDegree] = nodeToMove;
                 }
             }
+            current = current->next;
         }
 
-        // Add this line right here
         degreeWhenDeleted[vertexToDelete] = smallestDegree;
-
         degree[vertexToDelete] = -1;
     }
 
     int *sortedVertices = new int[N];
-    Node *cur = deletedOrder;
+    Graph::Node *cur = deletedOrder;
     for (int i = 0; i < N; ++i) {
         sortedVertices[i] = cur->value;
         cur = cur->next;
@@ -90,10 +86,13 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         int vertex = sortedVertices[i];
         SimpleSet usedColors;
 
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[vertex][j] != -1 && degree[j] == -1) {
+        Graph::Node *neighbor = adjList[vertex];
+        while (neighbor != nullptr) {
+            int j = neighbor->value;
+            if (degree[j] == -1) {
                 usedColors.insert(color[j]);
             }
+            neighbor = neighbor->next;
         }
         int assignedColor = 0;
         while (usedColors.contains(assignedColor)) {
@@ -102,36 +101,40 @@ void Orderings::smallestLastVertexOrdering(Graph &graph) {
         color[vertex] = assignedColor;
     }
 
-    // Modify the printSummary function call to include the degreeWhenDeleted array
     printSummary(graph, color, degreeWhenDeleted, N, "Smallest Last Vertex Ordering");
 
     // Cleanup
     for (int i = 0; i < N; ++i) {
-        Node *cur2 = degreeLists[i];
+        Graph::Node *cur2 = degreeLists[i];
         while (cur2) {
-            Node *next = cur2->next;
+            Graph::Node *next = cur2->next;
             delete cur2;
             cur2 = next;
         }
     }
 
-    Node *curDeletedOrder = deletedOrder;
+    Graph::Node *curDeletedOrder = deletedOrder;
     while (curDeletedOrder) {
-        Node *next = curDeletedOrder->next;
+        Graph::Node *next = curDeletedOrder->next;
         delete curDeletedOrder;
         curDeletedOrder = next;
     }
 
     // Delete sortedVertices array
     delete[] sortedVertices;
+
+    // Delete vertices array
+    delete[] vertices;
 }
+
+
 
 
 void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
 
-    Node *degreeLists[N];
+    Graph::Node *degreeLists[N];
     for (int i = 0; i < N; ++i) {
         degreeLists[i] = nullptr;
     }
@@ -140,13 +143,13 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
     int degreeWhenDeleted[N];
     for (int i = 0; i < N; ++i) {
         degree[i] = 0;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[i][j] != -1) {
-                degree[i]++;
-            }
+        Graph::Node* temp = adjList[i];
+        while(temp != nullptr) {
+            degree[i]++;
+            temp = temp->next;
         }
         degreeWhenDeleted[i] = degree[i]; // Store the degree when deleted
-        Node *newNode = new Node();
+        Graph::Node *newNode = new Graph::Node();
         newNode->value = i;
         newNode->next = degreeLists[degree[i]];
         degreeLists[degree[i]] = newNode;
@@ -157,10 +160,10 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
         int vertex = i;
         SimpleSet usedColors;
 
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[vertex][j] != -1) {
-                usedColors.insert(color[j]);
-            }
+        Graph::Node* temp = adjList[vertex];
+        while(temp != nullptr) {
+            usedColors.insert(color[temp->value]);
+            temp = temp->next;
         }
         int assignedColor = 0;
         while (usedColors.contains(assignedColor)) {
@@ -175,13 +178,13 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
     }
 
     // Update the printSummary function call to include the degreeWhenDeleted array
-    printSummary(graph, color, degreeWhenDeleted, N, "Smallest Original Degree Last");
+    //printSummary(graph, color, degreeWhenDeleted, N, "Smallest Original Degree Last");
 
     // Cleanup
     for (int i = 0; i < N; ++i) {
-        Node *cur = degreeLists[i];
+        Graph::Node *cur = degreeLists[i];
         while (cur) {
-            Node *next = cur->next;
+            Graph::Node *next = cur->next;
             delete cur;
             cur = next;
         }
@@ -190,7 +193,7 @@ void Orderings::smallestOriginalVertexOrdering(Graph &graph) {
 
 void Orderings::uniformRandomOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
     int *order = new int[N];
 
     // Initialize the order array with vertex indices
@@ -220,10 +223,12 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
         int vertex = order[i];
         SimpleSet usedColors;
 
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[vertex][j] != -1 && color[j] != -1) {
-                usedColors.insert(color[j]);
+        Graph::Node* temp = adjList[vertex];
+        while(temp != nullptr) {
+            if (color[temp->value] != -1) {
+                usedColors.insert(color[temp->value]);
             }
+            temp = temp->next;
         }
         int assignedColor = 0;
         while (usedColors.contains(assignedColor)) {
@@ -238,24 +243,23 @@ void Orderings::uniformRandomOrdering(Graph &graph) {
     }
 
     // Update the printSummary function call to include the degreeWhenDeleted array
-    printSummary(graph, color, degreeWhenDeleted, N, "Uniform Random Ordering");
+    //printSummary(graph, color, degreeWhenDeleted, N, "Uniform Random Ordering");
 
     // Cleanup
     delete[] order;
     delete[] color;
 }
-
 void Orderings::largestDegreeFirstOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
 
     int degree[N];
     for (int i = 0; i < N; ++i) {
         degree[i] = 0;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[i][j] != -1) {
-                degree[i]++;
-            }
+        Graph::Node *temp = adjList[i];
+        while(temp) {
+            degree[i]++;
+            temp = temp->next;
         }
     }
 
@@ -283,10 +287,12 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
         degreeWhenDeleted[maxDegreeVertex] = maxDegree; // Store the degree when deleted
 
         SimpleSet usedColors;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[maxDegreeVertex][j] != -1) {
-                usedColors.insert(color[j]);
+        Graph::Node *temp = adjList[maxDegreeVertex];
+        while(temp) {
+            if (color[temp->value] != -1) {
+                usedColors.insert(color[temp->value]);
             }
+            temp = temp->next;
         }
 
         int assignedColor = 0;
@@ -302,12 +308,13 @@ void Orderings::largestDegreeFirstOrdering(Graph &graph) {
     }
 
     // Update the printSummary function call to include the degreeWhenDeleted array
-    printSummary(graph, color, degreeWhenDeleted, N, "Largest Degree First");
+    //printSummary(graph, color, degreeWhenDeleted, N, "Largest Degree First");
 }
+
 
 void Orderings::depthFirstOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
 
     bool visited[N];
     int color[N];
@@ -324,18 +331,20 @@ void Orderings::depthFirstOrdering(Graph &graph) {
 
         // Compute the degree when deleted
         int degree = 0;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[v][j] != -1) {
-                degree++;
-            }
+        Graph::Node *temp = adjList[v];
+        while(temp) {
+            degree++;
+            temp = temp->next;
         }
         degreeWhenDeleted[v] = degree;
 
         SimpleSet usedColors;
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[v][j] != -1) {
-                usedColors.insert(color[j]);
+        temp = adjList[v];
+        while(temp) {
+            if (color[temp->value] != -1) {
+                usedColors.insert(color[temp->value]);
             }
+            temp = temp->next;
         }
 
         int assignedColor = 0;
@@ -344,10 +353,12 @@ void Orderings::depthFirstOrdering(Graph &graph) {
         }
         color[v] = assignedColor;
 
-        for (int j = 0; j < N; ++j) {
-            if (adjMatrix[v][j] != -1 && !visited[j]) {
-                dfs(j);
+        temp = adjList[v];
+        while(temp) {
+            if (!visited[temp->value]) {
+                dfs(temp->value);
             }
+            temp = temp->next;
         }
     };
 
@@ -363,12 +374,12 @@ void Orderings::depthFirstOrdering(Graph &graph) {
     }
 
     // Update the printSummary function call to include the degreeWhenDeleted array
-    printSummary(graph, color, degreeWhenDeleted, N, "Depth-First Ordering");
+    //printSummary(graph, color, degreeWhenDeleted, N, "Depth-First Ordering");
 }
 
 void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     int N = graph.getNumberOfVertices();
-    int **adjMatrix = graph.getAdjMatrix();
+    Graph::Node **adjList = graph.getAdjList();
 
     bool *inSet = new bool[N]();
     bool *visited = new bool[N]();
@@ -378,10 +389,10 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
             inSet[i] = true;
             visited[i] = true;
 
-            for (int j = 0; j < N; ++j) {
-                if (adjMatrix[i][j] != -1) {
-                    visited[j] = true;
-                }
+            Graph::Node *temp = adjList[i];
+            while(temp) {
+                visited[temp->value] = true;
+                temp = temp->next;
             }
         }
     }
@@ -395,10 +406,10 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     for (int i = 0; i < N; ++i) {
         if (inSet[i]) {
             SimpleSet usedColors;
-            for (int j = 0; j < N; ++j) {
-                if (adjMatrix[i][j] != -1) {
-                    usedColors.insert(color[j]);
-                }
+            Graph::Node *temp = adjList[i];
+            while(temp) {
+                usedColors.insert(color[temp->value]);
+                temp = temp->next;
             }
 
             int assignedColor = 0;
@@ -413,10 +424,10 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     for (int i = 0; i < N; ++i) {
         if (color[i] == -1) {
             SimpleSet usedColors;
-            for (int j = 0; j < N; ++j) {
-                if (adjMatrix[i][j] != -1) {
-                    usedColors.insert(color[j]);
-                }
+            Graph::Node *temp = adjList[i];
+            while(temp) {
+                usedColors.insert(color[temp->value]);
+                temp = temp->next;
             }
 
             int assignedColor = 0;
@@ -433,7 +444,7 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
         std::cout << "Vertex " << i << " has color " << color[i] << std::endl;
     }
 
-    printSummary(graph, color, degreeWhenDeleted, N, "Maximal Independent Set Ordering");
+    //printSummary(graph, color, degreeWhenDeleted, N, "Maximal Independent Set Ordering");
 
     // Cleanup
     delete[] inSet;
@@ -441,8 +452,6 @@ void Orderings::maximalIndependentSetOrdering(Graph &graph) {
     delete[] color;
     delete[] degreeWhenDeleted;
 }
-
-
 
 void Orderings::printSummary(Graph &graph, int *color, int *degreeWhenDeleted, int N, const std::string &methodName) {
     int maxColor = 0;
@@ -471,7 +480,7 @@ void Orderings::printSummary(Graph &graph, int *color, int *degreeWhenDeleted, i
             maxDegreeWhenDeleted = currentDegreeWhenDeleted;
         }
 
-        std::cout << "Vertex " << i << ": Color " << color[i] << ", Original degree " << originalDegree << ", Degree when deleted " << degreeWhenDeleted << std::endl;
+        std::cout << "Vertex " << i << ": Color " << color[i] << ", Original degree " << originalDegree << ", Degree when deleted " << currentDegreeWhenDeleted << std::endl;
     }
 
     for (int i = 0; i < maxColor; ++i) {

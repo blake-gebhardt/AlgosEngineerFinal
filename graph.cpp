@@ -4,27 +4,31 @@
 
 #include <iostream>
 #include <random>
-#include <algorithm>
 #include <ctime>
 #include <utility>
 #include "graph.h"
 
 
-    Graph::Graph(int V, int E, std::string type, std::string dist)
-            : V(V), E(E), type(std::move(type)), dist(std::move(dist)) {
-        adj = new int *[V];
-        for (int i = 0; i < V; ++i) {
-            adj[i] = new int[V];
-            std::fill_n(adj[i], V, -1);
-        }
-    }
 
-    Graph::~Graph() {
-        for (int i = 0; i < V; ++i) {
-            delete[] adj[i];
-        }
-        delete[] adj;
+Graph::Graph(int V, int E, std::string type, std::string dist)
+        : V(V), E(E), type(std::move(type)), dist(std::move(dist)) {
+    adj = new Node *[V];
+    for (int i = 0; i < V; ++i) {
+        adj[i] = nullptr;
     }
+}
+
+Graph::~Graph() {
+    for (int i = 0; i < V; ++i) {
+        Node *cur = adj[i];
+        while (cur) {
+            Node *next = cur->next;
+            delete cur;
+            cur = next;
+        }
+    }
+    delete[] adj;
+}
 
 void Graph::generateGraph() {
     if (type == "COMPLETE") {
@@ -39,21 +43,92 @@ void Graph::generateGraph() {
 void Graph::printAdjacencyList(std::ostream &out) {
     for (int i = 0; i < V; ++i) {
         out << i << ": ";
-        for (int j = 0; j < V; ++j) {
-            if (adj[i][j] != -1) {
-                out << adj[i][j] << " ";
-            }
+        Node *cur = adj[i];
+        while (cur) {
+            out << cur->value << " ";
+            cur = cur->next;
         }
         out << std::endl;
     }
 }
+
+// ... (rest of the functions: visualizeGraph, getNumberOfVertices, etc.)
+
+void Graph::generateCompleteGraph() {
+    for (int i = 0; i < V; ++i) {
+        for (int j = i + 1; j < V; ++j) {
+            addEdge(i, j);
+        }
+    }
+}
+
+void Graph::generateCycleGraph() {
+    for (int i = 0; i < V; ++i) {
+        addEdge(i, (i + 1) % V);
+    }
+}
+
+void Graph::generateRandomGraph() {
+    std::default_random_engine generator(static_cast<unsigned>(std::time(0)));
+    int edgesCreated = 0;
+    int mean = V / 2;
+    int sd = (V / 6) + 1;
+    while (edgesCreated < E) {
+        int u = getRandomVertex(mean, sd, generator);
+        int v = getRandomVertex(mean, sd, generator);
+
+        if (u != v && !edgeExists(u, v)) {
+            addEdge(u, v);
+            edgesCreated++;
+        }
+    }
+}
+
+int Graph::getDegree(int vertex) const {
+    int degree = 0;
+    Node *cur = adj[vertex];
+    while (cur) {
+        degree++;
+        cur = cur->next;
+    }
+    return degree;
+}
+
+Graph::Node** Graph::getAdjList() {
+    return adj;
+}
+
+
+void Graph::addEdge(int u, int v) {
+    Node *newNodeU = new Node();
+    newNodeU->value = v;
+    newNodeU->next = adj[u];
+    adj[u] = newNodeU;
+
+    Node *newNodeV = new Node();
+    newNodeV->value = u;
+    newNodeV->next = adj[v];
+    adj[v] = newNodeV;
+}
+
+bool Graph::edgeExists(int u, int v) {
+    Node *cur = adj[u];
+    while (cur) {
+        if (cur->value == v) {
+            return true;
+        }
+        cur = cur->next;
+    }
+    return false;
+}
+
 
 /*THE CODE BELOW WAS WRITTEN WITH HELP FROM https://graphviz.org/
  * https://sketchviz.com/graphviz-examples
  * and OpenAI
 */
 void Graph::visualizeGraph(const Graph &graph) {
-// Create a new DOT file for the graph
+    // Create a new DOT file for the graph
     std::string fileName = graph.type + graph.dist;
     std::ofstream dotFile(fileName + ".dot");
     dotFile << "graph {\n";
@@ -68,10 +143,13 @@ void Graph::visualizeGraph(const Graph &graph) {
 
     // Add edges to the DOT file
     for (int i = 0; i < graph.V; ++i) {
-        for (int j = i; j < graph.V; ++j) {
-            if (graph.adj[i][j] != -1) {
+        Node *current = graph.adj[i];
+        while (current != nullptr) {
+            int j = current->value;
+            if (j > i) { // To avoid duplicate edges
                 dotFile << i << " -- " << j << ";\n";
             }
+            current = current->next;
         }
     }
 
@@ -85,48 +163,11 @@ void Graph::visualizeGraph(const Graph &graph) {
 
     // Delete the DOT file
     std::remove((fileName + ".dot").c_str());
-
 }
+
 
 int Graph::getNumberOfVertices() const {
     return V;
-}
-
-int **Graph::getAdjMatrix() {
-    return adj;
-}
-
-void Graph::generateCompleteGraph() {
-    for (int i = 0; i < V; ++i) {
-        for (int j = i + 1; j < V; ++j) {
-            adj[i][j] = j;
-            adj[j][i] = i;
-        }
-    }
-}
-
-void Graph::generateCycleGraph() {
-    for (int i = 0; i < V; ++i) {
-        adj[i][(i + 1) % V] = (i + 1) % V;
-        adj[(i + 1) % V][i] = i;
-    }
-}
-
-void Graph::generateRandomGraph() {
-    std::default_random_engine generator(static_cast<unsigned>(std::time(0)));
-    int edgesCreated = 0;
-    int mean = V / 2;
-    int sd = (V / 6) + 1;
-    while (edgesCreated < E) {
-        int u = getRandomVertex(mean, sd, generator);
-        int v = getRandomVertex(mean, sd, generator);
-
-        if (u != v && adj[u][v] == -1) {
-            adj[u][v] = v;
-            adj[v][u] = u;
-            edgesCreated++;
-        }
-    }
 }
 
 int Graph::getRandomVertex(int mean, int sd, std::default_random_engine& generator) {
@@ -153,12 +194,4 @@ int Graph::getRandomVertex(int mean, int sd, std::default_random_engine& generat
     }
 }
 
-int Graph::getDegree(int vertex) const {
-    int degree = 0;
-    for (int i = 0; i < V; ++i) {
-        if (adj[vertex][i] != -1) {
-            degree++;
-        }
-    }
-    return degree;
-}
+

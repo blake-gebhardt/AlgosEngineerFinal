@@ -25,24 +25,19 @@ public:
     static void maximalIndependentSetOrdering(Graph &graph);
 
 private:
-    class Node {
-    public:
-        int value;
-        Node *next;
-    };
 
     class SimpleSet {
     public:
         void insert(int val) {
             if (contains(val)) return;
-            Node *newNode = new Node();
+            auto *newNode = new Graph::Node();
             newNode->value = val;
             newNode->next = head;
             head = newNode;
         }
 
         bool contains(int val) {
-            Node *cur = head;
+            auto *cur = head;
             while (cur) {
                 if (cur->value == val) return true;
                 cur = cur->next;
@@ -51,7 +46,7 @@ private:
         }
 
     private:
-        Node *head = nullptr;
+        Graph::Node *head = nullptr;
     };
 
 

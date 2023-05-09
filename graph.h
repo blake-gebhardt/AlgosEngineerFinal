@@ -11,8 +11,14 @@
 #include <ctime>
 #include <fstream>
 
+
+
 class Graph {
 public:
+    struct Node {
+        int value;
+        Node *next;
+    };
     Graph(int V, int E, std::string type, std::string dist);
     ~Graph();
 
@@ -21,18 +27,23 @@ public:
     static void visualizeGraph(const Graph &graph);
 
     int getNumberOfVertices() const;
-    int **getAdjMatrix();
     int getDegree(int vertex) const;
+
+    Node **getAdjList();
 
 private:
     int V, E;
     std::string type, dist;
-    int **adj;
+    Node **adj;
 
     void generateCompleteGraph();
     void generateCycleGraph();
     void generateRandomGraph();
     int getRandomVertex(int mean, int sd, std::default_random_engine &generator);
+
+    void addEdge(int u, int v);
+
+    bool edgeExists(int u, int v);
 };
 
 #endif //ALGOSENGINEERFINAL_GRAPH_H

@@ -56,12 +56,12 @@ int main() {
     outputFile.close();
 
     Orderings orderer;
-    Graph* graphs[5] = {&complete, &cycle, &randUniform, &randSkewed, &randGaussian};
+    Graph* graphs[5] = {&complete, &cycle, &randGaussian, &randSkewed, &randUniform};
     std::string graphNames[5] = {"complete", "cycle", "randGaussian", "randSkewed",  "randUniform"};
 
 
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 3; ++i) {
         std::cout << "Applying orderings on " << graphNames[i] << " graph:" << std::endl;
 
         std::cout << "\nSmallest last vertex ordering:" << std::endl;
@@ -73,14 +73,17 @@ int main() {
         std::cout << "\nUniform random ordering:" << std::endl;
         orderer.uniformRandomOrdering(*graphs[i]);
 
+
         std::cout << "\nLargest degree first ordering:" << std::endl;
         orderer.largestDegreeFirstOrdering(*graphs[i]);
 
         std::cout << "\nDepth-first search ordering:" << std::endl;
         orderer.depthFirstOrdering(*graphs[i]);
 
+
         std::cout << "\nMaximal independent set ordering:" << std::endl;
         orderer.maximalIndependentSetOrdering(*graphs[i]);
+
 
         std::cout << "\n---------------------------------------\n";
     }
